@@ -33,23 +33,14 @@ app.post("/api/posts", (request, response, next) => {
 });
 
 app.get('/api/posts', (request, response, next) => {
-  const posts = [
-    {
-      id: '123456',
-      title: 'First server side post',
-      content: 'first serverside content'
-    },
-    {
-      id: '23456',
-      title: 'Second Post',
-      content: 'second content'
-    }
-
-  ];
-  response.status(200).json({
-    message: 'Posts fetched succesfully!',
-    posts: posts
+  Post.find().then(documents => {
+    response.status(200).json({
+      message: 'Posts fetched succesfully!',
+      posts: documents
+    });
   });
+
+  ;
 });
 
 module.exports = app;
