@@ -29,7 +29,6 @@ router.put("/:id", (request, response, next) => {
   })
 })
 
-
 router.get('', (request, response, next) => {
   Post.find().then(documents => {
     response.status(200).json({
@@ -38,7 +37,6 @@ router.get('', (request, response, next) => {
     });
   });
 });
-
 
 router.get("/:id", (request, response, next) => {
   Post.findById(request.params.id).then(post => {
@@ -49,7 +47,6 @@ router.get("/:id", (request, response, next) => {
     }
   })
 })
-
 
 router.delete("/:id", (request, response, next) => {
   Post.deleteOne({ _id: request.params.id }).then(result => { console.log(result) })
