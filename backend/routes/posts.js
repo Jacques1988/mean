@@ -18,7 +18,6 @@ const storage = multer.diskStorage({
     cb(error, "backend/images");
   },
   filename: (req, file, cb) => {
-    const url = req.protocol + '://' + req.get('host');
     const name = file.originalname.toLowerCase().split(' ').join('-');
     const extension = MIME_TYPE_MAP[file.mimetype];
     cb(null, name + '-' + Date.now() + '.' + extension);
@@ -27,6 +26,7 @@ const storage = multer.diskStorage({
 
 
 router.post("", multer({storage : storage}).single('image') , (request, response, next) => {
+  const url = request.protocol + '://' + request.get('host');
   const post = new Post({
     title: request.body.title,
     content: request.body.content,

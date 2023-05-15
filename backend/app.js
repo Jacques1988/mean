@@ -2,12 +2,13 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const postsRoutes = require("./routes/posts");
-
+const path = require('path');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use("/images", express.static(path.join("backend/images")));
 
 
 mongoose.connect('mongodb+srv://jacquesvanluyck:jidI3575MUN0d7rd@cluster0.odan7pd.mongodb.net/node-angular').then(() => {
