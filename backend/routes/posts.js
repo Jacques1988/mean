@@ -66,8 +66,13 @@ router.post("", multer({storage : storage}).single('image') , (request, response
 });
 
 router.get('', (request, response, next) => {
-  console.log(request.query);
-  Post.find().then(documents => {
+  const pageSize = +request.query.pagesize;
+  const currentPage = +request.query.page;
+  const postQuery = Post.find();
+  if(pageSize && currentPage){
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+  }
+  postQuery.then(documents => {
     response.status(200).json({
       message: 'Posts fetched succesfully!',
       posts: documents
