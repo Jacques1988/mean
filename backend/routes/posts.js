@@ -44,11 +44,18 @@ router.post("", multer({storage : storage}).single('image') , (request, response
 });
 
 router.put("/:id", (request, response, next) => {
+  let imagePath = request.body.imagePath
+  if(request.file){
+    const url = request.protocol + '://' + request.get('host');
+    imagePath = url + "/images/" + request.file.filename;
+  }
   const post = new Post({
     _id: request.body.id,
     title: request.body.title,
-    content: request.body.content
+    content: request.body.content,
+    imagePath: imagePath
   });
+  console.log(post)
   Post.updateOne({ _id: request.params.id }, post).then(result => {
     console.log(result);
     response.status(200).json({ message: "Update successful!" });
