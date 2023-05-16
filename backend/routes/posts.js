@@ -47,6 +47,7 @@ router.put(
 );
 
 
+
 router.post("", multer({storage : storage}).single('image') , (request, response, next) => {
   const url = request.protocol + '://' + request.get('host');
   const post = new Post({
@@ -65,20 +66,29 @@ router.post("", multer({storage : storage}).single('image') , (request, response
   });
 });
 
+
+
 router.get('', (request, response, next) => {
   const pageSize = +request.query.pagesize;
   const currentPage = +request.query.page;
   const postQuery = Post.find();
+  let fetchedPosts;
   if(pageSize && currentPage){
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
   postQuery.then(documents => {
+    fetchedPosts = documents;
+    return Post.count();
+  }).then(count => {
     response.status(200).json({
-      message: 'Posts fetched succesfully!',
-      posts: documents
-    });
-  });
+      message: "Posts fetched successfully!",
+      posts: fetchedPosts,
+      maxPosts: count
+    })
+  })
 });
+
+
 
 router.get("/:id", (request, response, next) => {
   Post.findById(request.params.id).then(post => {
@@ -89,6 +99,8 @@ router.get("/:id", (request, response, next) => {
     }
   })
 })
+
+
 
 router.delete("/:id", (request, response, next) => {
   Post.deleteOne({ _id: request.params.id }).then(result => { console.log(result) })
