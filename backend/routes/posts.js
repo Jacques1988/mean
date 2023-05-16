@@ -43,24 +43,27 @@ router.post("", multer({storage : storage}).single('image') , (request, response
   });
 });
 
-router.put("/:id", (request, response, next) => {
-  let imagePath = request.body.imagePath
-  if(request.file){
-    const url = request.protocol + '://' + request.get('host');
-    imagePath = url + "/images/" + request.file.filename;
+router.put(
+  "/:id",
+  multer({ storage: storage }).single("image"),
+  (req, res, next) => {
+    let imagePath = req.body.imagePath;
+    if (req.file) {
+      const url = req.protocol + "://" + req.get("host");
+      imagePath = url + "/images/" + req.file.filename
+    }
+    const post = new Post({
+      _id: req.body.id,
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: imagePath
+    });
+    console.log(post);
+    Post.updateOne({ _id: req.params.id }, post).then(result => {
+      res.status(200).json({ message: "Update successful!" });
+    });
   }
-  const post = new Post({
-    _id: request.body.id,
-    title: request.body.title,
-    content: request.body.content,
-    imagePath: imagePath
-  });
-  console.log(post)
-  Post.updateOne({ _id: request.params.id }, post).then(result => {
-    console.log(result);
-    response.status(200).json({ message: "Update successful!" });
-  })
-})
+);
 
 router.get('', (request, response, next) => {
   Post.find().then(documents => {
