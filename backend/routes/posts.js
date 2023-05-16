@@ -24,25 +24,6 @@ const storage = multer.diskStorage({
   }
 })
 
-
-router.post("", multer({storage : storage}).single('image') , (request, response, next) => {
-  const url = request.protocol + '://' + request.get('host');
-  const post = new Post({
-    title: request.body.title,
-    content: request.body.content,
-    imagePath: url + "/images/" + request.file.filename
-  });
-  post.save().then(createdPost => {
-    response.status(201).json({
-      message: 'Post added successfully',
-      post: {
-        ...createdPost,
-        id: createdPost._id,
-      }
-    });
-  });
-});
-
 router.put(
   "/:id",
   multer({ storage: storage }).single("image"),
@@ -65,7 +46,27 @@ router.put(
   }
 );
 
+
+router.post("", multer({storage : storage}).single('image') , (request, response, next) => {
+  const url = request.protocol + '://' + request.get('host');
+  const post = new Post({
+    title: request.body.title,
+    content: request.body.content,
+    imagePath: url + "/images/" + request.file.filename
+  });
+  post.save().then(createdPost => {
+    response.status(201).json({
+      message: 'Post added successfully',
+      post: {
+        ...createdPost,
+        id: createdPost._id,
+      }
+    });
+  });
+});
+
 router.get('', (request, response, next) => {
+  console.log(request.query);
   Post.find().then(documents => {
     response.status(200).json({
       message: 'Posts fetched succesfully!',
