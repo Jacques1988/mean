@@ -20,7 +20,7 @@ mongoose.connect('mongodb+srv://jacquesvanluyck:jidI3575MUN0d7rd@cluster0.odan7p
 
 app.use((request, result, next) => {
   result.setHeader("Access-Control-Allow-Origin", "*");
-  result.setHeader("Access-Control-Allow-Headers", "Origin, X-Request-With, Content-Type, Accept");
+  result.setHeader("Access-Control-Allow-Headers", "Origin, X-Request-With, Content-Type, Accept, Authorization");
   result.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
   next();
 });
