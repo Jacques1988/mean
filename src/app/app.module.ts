@@ -10,7 +10,7 @@ import { HeaderComponent } from './header/header.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { LoginComponent } from './auth/login/login.component';
-
+import { SignupComponent } from './auth/signup/signup.component';
 
 import { MatInputModule} from '@angular/material/input';
 import { MatCardModule} from '@angular/material/card';
@@ -21,13 +21,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
     PostCreateComponent,
     HeaderComponent,
     PostListComponent,
-    LoginComponent
+    LoginComponent,
+    SignupComponent
+
   ],
   imports: [
     BrowserModule,
