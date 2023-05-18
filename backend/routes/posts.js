@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
   destination: (request, file, cb) => {
     const isValid = MIME_TYPE_MAP[file.mimetype];
     let error = new Error("Invalid mime type");
-    if(isValid){
+    if (isValid) {
       error = null;
     }
     cb(error, "backend/images");
@@ -34,7 +34,7 @@ router.put(
     let imagePath = req.body.imagePath;
     if (req.file) {
       const url = req.protocol + "://" + req.get("host");
-      imagePath = url + "/images/" + req.file.filename
+      imagePath = url + "/images/" + req.file.filename;
     }
     const post = new Post({
       _id: req.body.id,
@@ -42,16 +42,19 @@ router.put(
       content: req.body.content,
       imagePath: imagePath
     });
-    console.log(post);
-    Post.updateOne({ _id: req.params.id }, post).then(result => {
-      res.status(200).json({ message: "Update successful!" });
+    Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post).then(result => {
+      if (result.modifiedCount > 0) {
+        res.status(200).json({ message: "Update successful!" });
+      } else {
+        res.status(401).json({ message: "Not authorized at this message!" });
+      }
     });
   }
 );
 
 
 
-router.post("",checkAuth, multer({storage : storage}).single('image') , (request, response, next) => {
+router.post("", checkAuth, multer({ storage: storage }).single('image'), (request, response, next) => {
   const url = request.protocol + '://' + request.get('host');
   const post = new Post({
     title: request.body.title,
@@ -77,7 +80,7 @@ router.get('', (request, response, next) => {
   const currentPage = +request.query.page;
   const postQuery = Post.find();
   let fetchedPosts;
-  if(pageSize && currentPage){
+  if (pageSize && currentPage) {
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
   postQuery.then(documents => {
@@ -96,19 +99,24 @@ router.get('', (request, response, next) => {
 
 router.get("/:id", (request, response, next) => {
   Post.findById(request.params.id).then(post => {
-    if(post){
+    if (post) {
       response.status(200).json(post);
-    }else{
-      response.status(404).json({message: 'Post not found'});
+    } else {
+      response.status(404).json({ message: 'Post not found' });
     }
   })
 })
 
 
 
-router.delete("/:id",checkAuth, (request, response, next) => {
-  Post.deleteOne({ _id: request.params.id }).then(result => { console.log(result) })
-  response.status(200).json({ message: "Post delete!" });
+router.delete("/:id", checkAuth, (req, res, next) => {
+  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId }).then(result => {
+    if (result.deletedCount > 0) {
+      res.status(200).json({ message: "Post deleted!" });
+    } else {
+      res.status(401).json({ message: "Not authorized!" });
+    }
+  })
 });
 
 module.exports = router;

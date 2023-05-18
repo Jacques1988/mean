@@ -32,7 +32,6 @@ export class PostService {
           }), maxPosts: postData.maxPosts
         }
       })).subscribe((transformedPosts) => {
-        console.log(transformedPosts);
         this.posts = transformedPosts.posts;
         this.postsUpdated.next({ posts: [...this.posts], postCount: transformedPosts.maxPosts });
       });
