@@ -56,8 +56,9 @@ router.post("",checkAuth, multer({storage : storage}).single('image') , (request
   const post = new Post({
     title: request.body.title,
     content: request.body.content,
-    imagePath: url + "/images/" + request.file.filename
+    imagePath: url + "/images/" + request.file.filename,
   });
+  return response.status(200).json({});
   post.save().then(createdPost => {
     response.status(201).json({
       message: 'Post added successfully',
