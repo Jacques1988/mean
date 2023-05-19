@@ -42,7 +42,7 @@ export class PostService {
   }
 
   getPost(id: string) {
-    return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>('http://localhost:3000/api/posts/' + id);
+    return this.http.get<{ _id: string, title: string, content: string, imagePath: string, creator: string }>('http://localhost:3000/api/posts/' + id);
   }
 
   addPost(title: string, content: string, image: File) {
@@ -70,7 +70,8 @@ export class PostService {
         id: id,
         title: title,
         content: content,
-        imagePath: image as any
+        imagePath: image as any,
+        creator: null
       };
     }
     this.http
