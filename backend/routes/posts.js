@@ -1,5 +1,6 @@
 const express = require('express');
-const Post = require('../models/post');
+const PostController = require('../controllers/posts');
+
 const checkAuth = require('../middleware/check-auth');
 const multer = require('multer');
 const router = express.Router();
@@ -29,113 +30,22 @@ const storage = multer.diskStorage({
 router.put(
   "/:id",
   checkAuth,
-  multer({ storage: storage }).single("image"),
-  (req, res, next) => {
-    let imagePath = req.body.imagePath;
-    if (req.file) {
-      const url = req.protocol + "://" + req.get("host");
-      imagePath = url + "/images/" + req.file.filename;
-    }
-    const post = new Post({
-      _id: req.body.id,
-      title: req.body.title,
-      content: req.body.content,
-      imagePath: imagePath,
-      creator: req.userData.userId
-    });
-    Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post).then(result => {
-      if (result.modifiedCount > 0) {
-        res.status(200).json({ message: "Update successful!" });
-      } else {
-        res.status(401).json({ message: "Not authorized at this message!" });
-      }
-    })
-    .catch(error => {
-      res.status(500).json({
-        message: 'Couldn"t update Post!'
-      })
-    })
-  }
-);
+  multer({ storage: storage }).single("image"), PostController.updatePost);
 
 
 
-router.post("", checkAuth, multer({ storage: storage }).single('image'), (request, response, next) => {
-  const url = request.protocol + '://' + request.get('host');
-  const post = new Post({
-    title: request.body.title,
-    content: request.body.content,
-    imagePath: url + "/images/" + request.file.filename,
-    creator: request.userData.userId
-  });
-  post.save().then(createdPost => {
-    response.status(201).json({
-      message: 'Post added successfully',
-      post: {
-        ...createdPost,
-        id: createdPost._id,
-      }
-    });
-  })
-  .catch(error => {
-    res.status(500).json({
-      message: 'Creating a Post failed!'
-    });
-  });
-});
+router.post("", checkAuth, multer({ storage: storage }).single('image'), PostController.createPost );
 
 
 
-router.get('', (request, response, next) => {
-  const pageSize = +request.query.pagesize;
-  const currentPage = +request.query.page;
-  const postQuery = Post.find();
-  let fetchedPosts;
-  if (pageSize && currentPage) {
-    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
-  }
-  postQuery.then(documents => {
-    fetchedPosts = documents;
-    return Post.count();
-  }).then(count => {
-    response.status(200).json({
-      message: "Posts fetched successfully!",
-      posts: fetchedPosts,
-      maxPosts: count
-    })
-  }).catch(error => {
-    res.status(500).json({message :"Fetching Posts failed!"})
-  })
-});
+router.get('', PostController.getPosts);
 
 
 
-router.get("/:id", (request, response, next) => {
-  Post.findById(request.params.id).then(post => {
-    if (post) {
-      response.status(200).json(post);
-    } else {
-      response.status(404).json({ message: 'Post not found' });
-    }
-  }).catch(error => res.status(500).json({
-    message: 'Fetching post failed!'
-  }))
-})
+router.get("/:id", PostController.getPost)
 
 
 
-router.delete("/:id", checkAuth, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId }).then(result => {
-    if (result.deletedCount > 0) {
-      res.status(200).json({ message: "Post deleted!" });
-    } else {
-      res.status(401).json({ message: "Not authorized!" });
-    }
-  }).catch(error => {
-    res.status(500).json({
-      message: 'Delete this post is failed!'
-    })
-  })
-});
+router.delete("/:id", checkAuth, PostController.deletePost );
 
 module.exports = router;
