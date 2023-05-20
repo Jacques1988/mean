@@ -23,7 +23,6 @@ export class SignupComponent implements OnInit, OnDestroy{
         this.isLoading = false;
       }
     );
-
   }
 
   onSignup(form: NgForm) {
