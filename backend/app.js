@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/images", express.static(path.join("backend/images")));
 
 
-mongoose.connect('mongodb+srv://jacquesvanluyck:jidI3575MUN0d7rd@cluster0.odan7pd.mongodb.net/node-angular').then(() => {
+mongoose.connect('mongodb+srv://jacquesvanluyck:'+ process.env.MONGO_ATLAS_PW +'@cluster0.odan7pd.mongodb.net/node-angular').then(() => {
   console.log('Connected to Database')
 }).catch(() => {
   console.log('Connection failed');
