@@ -9,7 +9,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/images", express.static(path.join("images")));
+app.use("./images", express.static(path.join("images")));
 
 
 mongoose.connect('mongodb+srv://jacquesvanluyck:'+ process.env.MONGO_ATLAS_PW +'@cluster0.odan7pd.mongodb.net/node-angular').then(() => {
